@@ -1,0 +1,16 @@
+# Logs de Airflow
+logs/
+
+# Archivos temporales de dbt
+dbt_project/target/
+dbt_project/dbt_packages/
+
+# Variables de entorno
+.env
+
+# Cache de Python
+__pycache__/
+*.pyc
+
+# Configuración local de dbt
+dbt_project/profiles/.user.yml
