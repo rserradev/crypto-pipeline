@@ -83,6 +83,7 @@ services:
       - ./metabase-data:/metabase-data
     environment:
       MB_DB_FILE: /metabase-data/metabase.db
+    restart: always
 
   minio:
     image: minio/minio:latest
@@ -95,6 +96,20 @@ services:
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001"
+    restart: always
+
+  spark-master:
+    image: apache/spark:3.5.0
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    ports:
+      - "8090:8080"
+      - "7077:7077"
+
+  spark-worker:
+    image: apache/spark:3.5.0
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    depends_on:
+      - spark-master
 
 volumes:
   postgres_data:
