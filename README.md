@@ -1,29 +1,24 @@
-# Crypto Pipeline
+# Data Platform
 
-Pipeline de ingenierìa de datos que recolecta precios de criptomonedas en tiempo real y las procesa en una arquitectura de datos medallion (bronze, silver, gold)
+Plataforma de ingeniería de datos construida en homelab con arquitectura Lakehouse. Contiene múltiples pipelines de datos orquestados con Apache Airflow.
 
 ## Arquitectura
 ## Stack tecnológico
 
-- **Apache Airflow** — orquestación del pipeline
+- **Apache Airflow** — orquestación de pipelines
 - **MinIO** — data lake local (compatible con S3)
 - **Apache Parquet** — formato de almacenamiento columnar
 - **PostgreSQL** — almacenamiento de datos procesados
-- **dbt** — transformaciones SQL para capa gold
+- **Apache Spark** - procesamiento distribuido
+- **dbt** — transformaciones SQL
 - **Metabase** — visualización y dashboards
 - **Docker** — containerización de todos los servicios
 
-## Capas de datos
+## Pipelines disponibles
 
-| Capa | Tecnología | Descripción |
-|------|------------|-------------|
-| Bronze | MinIO (Parquet) | Datos crudos de la API sin transformar |
-| Silver | PostgreSQL | Datos limpios y tipados por columna |
-| Gold | PostgreSQL + dbt | Agregaciones diarias listas para BI |
-
-## Monedas monitoreadas
-
-Bitcoin, Ethereum, Solana, Cardano
+| Pipeline | Dominio | Frecuencia | Descripción |
+|----------|---------|------------|-------------|
+| crypto_pipeline | Criptomonedas | Cada hora | Precios de Bitcoin, Ethereum, Solana y Cardano |
 
 ## Cómo levantar el proyecto
 
@@ -33,14 +28,11 @@ Bitcoin, Ethereum, Solana, Cardano
 
 ### Pasos
 
-1. Clonar el repositorio
-2. Levantar los servicios
-3. Ejecutar el DAG manualmente o esperar la ejecución automática cada hora
-
 ```bash
-git clone https://github.com/rserradev/crypto-pipeline.git
-cd crypto-pipeline
+git clone https://github.com/rserradev/data-platform.git
+cd data-platform
 docker compose up -d
+```
 ```
 
 ### Servicios disponibles
@@ -50,16 +42,16 @@ docker compose up -d
 | Airflow | http://localhost:8080 | admin / admin |
 | MinIO | http://localhost:9001 | minioadmin / minioadmin |
 | Metabase | http://localhost:3000 | (configurar al entrar) |
+| Spark UI | http://localhost:8090 | — |
 | PostgreSQL | localhost:5432 | airflow / airflow |
 
 ## Estructura del proyecto
-crypto-pipeline/
-├── dags/
-│   └── crypto-pipeline.py    # DAG principal de Airflow
-├── dbt_project/
-│   ├── models/gold/          # Modelos dbt para capa gold
-│   └── profiles/             # Configuración de conexión dbt
+data-platform/
+├── dags/                         # DAGs de Airflow
+├── dbt_project/                  # Modelos dbt
+│   └── models/
+│       └── gold/                 # Modelos de capa gold
 ├── postgres-init/
-│   └── 01_init.sql           # Inicialización automática de la BD
-├── Dockerfile                # Imagen personalizada de Airflow con dbt
-└── docker-compose.yml        # Definición de todos los servicios
+│   └── 01_init.sql              # Inicialización automática de BD
+├── Dockerfile                    # Imagen personalizada de Airflow
+└── docker-compose.yml            # Definición de servicios
