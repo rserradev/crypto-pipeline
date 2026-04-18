@@ -46,26 +46,58 @@ def fetch_indicators():
     # Fecha de ayer
     ayer = (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%d")
     print(f"Consultando indicadores para: {ayer}")
-    
+
+    # Definir la fecha de ingesta
+    fecha_actual = datetime.utcnow().strftime("%Y-%m-%d")
+    print(f"Fecha de ingesta: {fecha_actual}")
+
     # Conectar a MinIO
     s3 = boto3.client("s3", **MINIO_CONN)
-    fecha = datetime.utcnow().strftime("%Y-%m-%d")
-    print(f"Fecha de ingesta: {fecha}")
+
+    # Crear bucket si no existe
+    try:
+        s3.create_bucket(Bucket=BUCKET)
+        print(f"Bucket '{BUCKET}' creado en MinIO.")
+    except Exception:
+        print(f"Bucket '{BUCKET}' ya existe en MinIO.")
 
     # Recorrer cada indicador y llamar a la API
     for nombre, serie_id in INDICATORS.items():
         params = {
             "user": BCENTRAL_USER,
             "pass": BCENTRAL_PASSWORD,
-            "firsdate": ayer,
+            "firstdate": ayer,
             "lastdate": ayer,
             "timeseries": serie_id,
             "function": "GetSeries",
         }
+
         response = requests.get(BASE_URL, params=params, timeout=30)
         data = response.json()
-        print(data)  # Imprimir la respuesta completa para depuración
-        print(f"Indicador {nombre} recibido: {len(data.get('Series', []))} registros")
+        print(f"Indicador {nombre} recibido: {len(data['Series']['Obs'])} registros")  
+
+        # Obtener las observaciones
+        observaciones = data["Series"]["Obs"]
+
+        # Convertir a tabla Parquet
+        table = pa.table({
+            "indicador":  [nombre] * len(observaciones),
+            "serie_id":   [serie_id] * len(observaciones),
+            "fecha":      [obs["indexDateString"] for obs in observaciones],
+            "valor":      [obs["value"] for obs in observaciones],
+            "status":     [obs["statusCode"] for obs in observaciones],
+            "fetched_at": [datetime.utcnow().isoformat()] * len(observaciones),
+        })
+
+        # Escribir en memoria y subir a MinIO
+        buffer = io.BytesIO()
+        pq.write_table(table, buffer)
+        buffer.seek(0)
+
+        key = f"indicators/{fecha_actual}/{nombre}_{ayer}.parquet"
+        s3.put_object(Bucket=BUCKET, Key=key, Body=buffer.getvalue())
+        print(f"MinIO: {nombre} → {key}")
+
 
 if __name__ == "__main__":
     fetch_indicators()

@@ -29,6 +29,7 @@ BUCKET = "crypto-bronze"
 COINS = ["bitcoin", "ethereum", "solana", "cardano"]
 
 def fetch_prices():
+
     # 1. Llamar a la API
     url = "https://api.coingecko.com/api/v3/coins/markets"
     params = {
