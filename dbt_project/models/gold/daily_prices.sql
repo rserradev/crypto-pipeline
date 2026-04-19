@@ -1,7 +1,7 @@
 -- Este modelo toma los datos de silver y calcula
 -- el precio promedio, mínimo y máximo por día
 
-{{ config(materialized='table') }}
+{{ config(materialized='table', schema='gold') }}
 
 SELECT
     DATE(fetched_at)                    AS price_date,

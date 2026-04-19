@@ -8,5 +8,5 @@ crypto_pipeline:
       password: airflow
       port: 5432
       dbname: airflow
-      schema: gold
+      schema: public
       threads: 2

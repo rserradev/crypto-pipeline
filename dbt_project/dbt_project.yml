@@ -1,4 +1,4 @@
-name: "crypto_pipeline"
+name: "data_platform"
 version: "1.0.0"
 config-version: 2
 
@@ -7,6 +7,10 @@ profile: "crypto_pipeline"
 model-paths: ["models"]
 
 models:
-  crypto_pipeline:
+  data_platform:
     gold:
       +materialized: table
+      +schema: gold
+    bcentral:
+      +materialized: table
+      +schema: bcentral
