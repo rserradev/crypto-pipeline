@@ -140,6 +140,7 @@ with DAG(
     start_date=datetime(2024, 1, 1),
     schedule_interval="@hourly",
     catchup=False,
+    tags=["crypto", "prices", "indicators"],
 ) as dag:
 
     tarea_fetch = PythonOperator(
