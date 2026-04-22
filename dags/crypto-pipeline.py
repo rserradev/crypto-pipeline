@@ -30,8 +30,8 @@ BUCKET = "crypto-bronze"
 COINS = ["bitcoin", "ethereum", "solana", "cardano"]
 
 def fetch_prices():
-    fecha_santago = ZoneInfo("America/Santiago")
-    ahora = datetime.now(fecha_santago)
+    fecha_santiago = ZoneInfo("America/Santiago")
+    ahora = datetime.now(fecha_santiago)
     print(f"Ejecutando fetch_prices a las {ahora.isoformat()}")
 
     # 1. Llamar a la API
@@ -55,8 +55,8 @@ def fetch_prices():
 
     # 3. Guardar cada moneda como archivo Parquet en MinIO
 
-    fecha = datetime.now(fecha_santago).strftime("%Y-%m-%d")
-    timestamp = int(datetime.now(fecha_santago).timestamp())
+    fecha = datetime.now(fecha_santiago).strftime("%Y-%m-%d")
+    timestamp = int(datetime.now(fecha_santiago).timestamp())
 
     for coin in data:
         # Convertir a tabla Parquet
@@ -68,7 +68,7 @@ def fetch_prices():
             "market_cap":    [float(coin["market_cap"] or 0)],
             "volume_24h":    [float(coin["total_volume"] or 0)],
             "change_24h":    [float(coin["price_change_percentage_24h"] or 0)],
-            "fetched_at":    [datetime.now(fecha_santago).isoformat()],
+            "fetched_at":    [datetime.now(fecha_santiago).isoformat()],
             "raw_json":      [json.dumps(coin)],
         })
 
