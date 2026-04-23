@@ -1,0 +1,43 @@
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+import requests
+import psycopg2
+import boto3
+import pyarrow as pa
+import pyarrow.parquet as pq
+import io
+import json
+
+# Conexión a PostgreSQL
+DB_CONN = {
+    "host": "postgres",
+    "port": 5432,
+    "dbname": "airflow",
+    "user": "airflow",
+    "password": "airflow",
+}
+
+# Configuración de MinIO
+MINIO_CONN = {
+    "endpoint_url": "http://minio:9000",
+    "aws_access_key_id": "minioadmin",
+    "aws_secret_access_key": "minioadmin",
+}
+
+# Bucket para datos de clima
+BUCKET = "weather-bronze"
+
+# URL base de la API Open-Meteo
+BASE_URL = "https://archive-api.open-meteo.com/v1/archive"
+
+# Ciudades a monitorear
+CITIES = {
+    "santiago":    {"lat": -33.45, "lon": -70.66},
+    "valparaiso":  {"lat": -33.04, "lon": -71.63},
+    "concepcion":  {"lat": -36.82, "lon": -73.04},
+    "antofagasta": {"lat": -23.65, "lon": -70.40},
+    "la_serena":   {"lat": -29.90, "lon": -71.25},
+    "temuco":      {"lat": -38.73, "lon": -72.59},
+}
