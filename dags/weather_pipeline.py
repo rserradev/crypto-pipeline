@@ -9,21 +9,22 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import io
 import json
+import os
 
 # Conexión a PostgreSQL
 DB_CONN = {
     "host": "postgres",
     "port": 5432,
-    "dbname": "airflow",
-    "user": "airflow",
-    "password": "airflow",
+    "dbname": os.getenv("POSTGRES_DB"),
+    "user": os.getenv("POSTGRES_USER"),
+    "password": os.getenv("POSTGRES_PASSWORD"),
 }
 
 # Configuración de MinIO
 MINIO_CONN = {
     "endpoint_url": "http://minio:9000",
-    "aws_access_key_id": "minioadmin",
-    "aws_secret_access_key": "minioadmin",
+    "aws_access_key_id": os.getenv("MINIO_ROOT_USER"),
+    "aws_secret_access_key": os.getenv("MINIO_ROOT_PASSWORD"),
 }
 
 # Bucket para datos de clima
