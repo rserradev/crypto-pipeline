@@ -16,26 +16,27 @@ import json
 BCENTRAL_USER = os.getenv("BCENTRAL_USER")
 BCENTRAL_PASSWORD = os.getenv("BCENTRAL_PASSWORD")
 
-# Indicadores a consultar
-INDICATORS = {
-    "usd_clp": "F073.TCO.PRE.Z.D",
-    "uf": "F073.UFF.PRE.Z.D",
-}
 
 # Conexión a la base de datos
 DB_CONN = {
     "host": "postgres",
     "port": 5432,
-    "dbname": "airflow",
-    "user": "airflow",
-    "password": "airflow",
+    "dbname": os.getenv("POSTGRES_DB"),
+    "user": os.getenv("POSTGRES_USER"),
+    "password": os.getenv("POSTGRES_PASSWORD"),
 }
 
 # Configuración de MinIO
 MINIO_CONN = {
     "endpoint_url": "http://minio:9000",
-    "aws_access_key_id": "minioadmin",
-    "aws_secret_access_key": "minioadmin",
+    "aws_access_key_id": os.getenv("MINIO_ROOT_USER"),
+    "aws_secret_access_key": os.getenv("MINIO_ROOT_PASSWORD"),
+}
+
+# Indicadores a consultar
+INDICATORS = {
+    "usd_clp": "F073.TCO.PRE.Z.D",
+    "uf": "F073.UFF.PRE.Z.D",
 }
 
 # Bucket para almacenar los datos en MinIO
